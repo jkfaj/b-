@@ -49,42 +49,42 @@ def extract_mp3(downloadfile):
    
 
 
-if __name__ == '__main__':
-    downloadfile='C:\\Users\\Administrator\\Desktop\\test2\\'
-    dataurl=pd.read_csv('C:\\Users\\Administrator\\Desktop\\下载链接.txt',header=None,sep='\t'
-    thread_list = []
-    url_num = 33
-    thread_num = 8
 
-    for i in range(1,len(dataurl)+1):
+downloadfile='C:\\Users\\Administrator\\Desktop\\test2\\'
+dataurl=pd.read_csv('C:\\Users\\Administrator\\Desktop\\下载链接.txt',header=None,sep='\t'
+thread_list = []
+    
+thread_num = 8
+
+for i in range(1,len(dataurl)+1):
         #为每个新URL创建下载线程
-        url = dataurl[i-1]
-        try:
-            t = threading.Thread(target=download360, args=(i,url,downloadfile))
+    url = dataurl[i-1]
+    try:
+        t = threading.Thread(target=download360, args=(i,url,downloadfile))
             #先下载360分辨率
-            thread_list.append(t)
-            t.start()
-        except:
-            t = threading.Thread(target=download720, args=(i,url,downloadfile))
+        thread_list.append(t)
+        t.start()
+    except:
+        t = threading.Thread(target=download720, args=(i,url,downloadfile))
             #没有360分辨率下载720
-            thread_list.append(t)
-            t.start()
-        except:
-            t = threading.Thread(target=downloaddefault, args=(i,url,downloadfile))
+        thread_list.append(t)
+        t.start()
+    except:
+        t = threading.Thread(target=downloaddefault, args=(i,url,downloadfile))
             # 没有720分辨率下载最高画质
-            thread_list.append(t)
-            t.start()
+        thread_list.append(t)
+        t.start()
 
         #print(thread_list[0])
 
         #当线程池满时，等待线程结束
-        while len(thread_list)>thread_num:  
+    while len(thread_list)>thread_num:  
             #移除已结束线程
-            thread_list = [x for x in thread_list if x.is_alive()]
-            time.sleep(3)
+        thread_list = [x for x in thread_list if x.is_alive()]
+        time.sleep(3)
            # print("running threads_________" + str(thread_list))
    
-    extract_mp3(downloadfile)
+extract_mp3(downloadfile)
 
 
 
