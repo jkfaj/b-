@@ -1,0 +1,102 @@
+#问题 txt文件中链接跟test2中mp3如何共存判断走哪个的条件是什么
+
+#b站多线程批量下载
+
+import you_get
+import threading
+import os
+import time
+import pandas as pd
+
+def download1080(count,url,downloadfile):
+    print("thread "+ str(count) +" is running")
+    os.system("you-get -o "+downloadfile+" --format=dash-flv "+url)
+
+def download720(count,url,downloadfile):
+    print("thread "+ str(count) +" is running")
+    os.system("you-get -o "+downloadfile+"  --format=dash-flv720 "+url)
+
+
+def download360(count,url,downloadfile):
+    print("thread "+ str(count) +" is running")
+    os.system("you-get -o "+downloadfile+" --format=dash-flv360 "+url)
+
+def downloaddefault(count,url,downloadfile):
+    print("thread "+ str(count) +" is running")
+    os.system("you-get -o "+downloadfile+"  "+url)
+
+def showinfo(count,url):
+    print("thread "+ str(count) +" is running")
+    os.system("you-get -i "+url)
+
+def test(arg):
+    print("thread "+ str(arg) +" is running")
+    os.system("ping www.baidu.com")
+    print("thread "+ str(arg) +" finish")
+
+
+if __name__ == '__main__':
+    downloadfile=''
+
+    dataurl=pd.read_csv('')
+
+    url_seed = 'https://www.bilibili.com/video/BV1MJ411u7Bc?p='
+    thread_list = []
+    url_num = 33
+    thread_num = 8
+
+    for i in range(1,len(dataurl)+1):
+        #为每个新URL创建下载线程
+        url = dataurl[i-1]
+        try:
+            t = threading.Thread(target=download360, args=(i,url,downloadfile))
+            #先下载360分辨率
+            thread_list.append(t)
+            t.start()
+        except:
+            t = threading.Thread(target=download720, args=(i,url,downloadfile))
+            #没有360分辨率下载720
+            thread_list.append(t)
+            t.start()
+        except:
+            t = threading.Thread(target=downloaddefault, args=(i,url,downloadfile))
+            # 没有720分辨率下载最高画质
+            thread_list.append(t)
+            t.start()
+
+        #print(thread_list[0])
+
+        #当线程池满时，等待线程结束
+        while len(thread_list)>thread_num:  
+            #移除已结束线程
+            thread_list = [x for x in thread_list if x.is_alive()]
+            time.sleep(3)
+           # print("running threads_________" + str(thread_list))
+
+
+
+        pass
+#小的改名 删除弹幕文件
+
+import os
+path = os.getcwd() +'\\'     
+
+for f in os.listdir(path):
+    if f.endswith(u'.mp4'):
+        oldname = path + f 
+        #print(f)
+        f1 = f.split("(")
+        try:
+            f2 = f1[1].split(")")
+        except:
+            f2 = f1
+        if f2[0].endswith(u'.mp4'):
+            newname = path + f2[0]
+        else:
+            newname=path + f2[0] + '.mp4'
+        os.rename(oldname,newname) 
+        print(oldname,'======>',newname)
+
+#将视频提取出mp3
+
+
